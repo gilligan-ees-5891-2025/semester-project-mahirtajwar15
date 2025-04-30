@@ -5,6 +5,10 @@ author: "Mahir Tajwar"
 date: 04/17/2025
 ---
 
+::: {.comment}
+My comments will appear in colored boxes like this.
+:::
+
 ## Setup
 
 Set up R environment by loading the necessary libraries
@@ -28,39 +32,109 @@ library(readxl)
 
 ## Introduction
 
-Freshwater ecosystems play a critical role in global biogeochemical cycling by regulating carbon and oxygen fluxes between aquatic environments and the atmosphere. Understanding lake metabolism — the balance between gross primary production (GPP), ecosystem respiration (ER), and net ecosystem productivity (NEP) — is essential for evaluating ecosystem health, productivity, and how these systems respond to climate variability and anthropogenic impacts.
+Freshwater ecosystems play a critical role in global biogeochemical cycling by
+regulating carbon and oxygen fluxes between aquatic environments and the
+atmosphere. Understanding lake metabolism---the balance between gross primary
+production (GPP), ecosystem respiration (ER), and net ecosystem productivity
+(NEP)---is essential for evaluating ecosystem health, productivity, and how
+these systems respond to climate variability and anthropogenic impacts.
 
-Lake metabolism studies provide a quantitative framework for interpreting the diel (24-hour) patterns of oxygen fluctuations driven by photosynthesis during the day and respiration at night. By analyzing these oxygen patterns, researchers can estimate how much organic carbon is being produced and consumed within the aquatic system. High-frequency metabolism modeling is particularly valuable for capturing these dynamics at sub-daily scales, revealing short-term ecological processes that would otherwise be obscured by daily averages.
+Lake metabolism studies provide a quantitative framework for interpreting the
+diel (24-hour) patterns of oxygen fluctuations driven by photosynthesis during
+the day and respiration at night. By analyzing these oxygen patterns,
+researchers can estimate how much organic carbon is being produced and consumed
+within the aquatic system. High-frequency metabolism modeling is particularly
+valuable for capturing these dynamics at sub-daily scales, revealing short-term
+ecological processes that would otherwise be obscured by daily averages.
 
-In this project, I focus on Stephens Lake, a shallow headwater lake located in Franklin, Tennessee. The lake is well-mixed, oxygen-rich, and oligotrophic, making it an ideal system for exploring diel patterns in metabolism under relatively low-nutrient and low-stratification conditions. From October 18 to 20, 2024, I conducted a 48-hour field campaign during the fall season, collecting dissolved oxygen and temperature data at half-meter depth intervals every hour. These continuous measurements form the foundation for modeling ecosystem metabolism.
+In this project, I focus on Stephens Lake, a shallow headwater lake located in
+Franklin, Tennessee. The lake is well-mixed, oxygen-rich, and oligotrophic,
+making it an ideal system for exploring diel patterns in metabolism under
+relatively low-nutrient and low-stratification conditions. From October 18 to
+20, 2024, I conducted a 48-hour field campaign during the fall season,
+collecting dissolved oxygen and temperature data at half-meter depth intervals
+every hour. These continuous measurements form the foundation for modeling
+ecosystem metabolism.
 
-To supplement these in-situ measurements, I derived additional atmospheric and environmental parameters. Wind speed data were extracted from the ERA5-Land hourly reanalysis dataset using Google Earth Engine. Photosynthetically active radiation (PAR) — a key driver of daytime primary production — was modeled using the `suncalc` package in R, based on solar elevation angles at the lake’s coordinates. Together, these datasets allow for a complete input matrix to estimate GPP, ER, and NEP using the `LakeMetabolizer` package in R, specifically applying the ordinary least squares (OLS) method for modeling metabolism at an hourly resolution.
+To supplement these in-situ measurements, I derived additional atmospheric and
+environmental parameters. Wind speed data were extracted from the ERA5-Land
+hourly reanalysis dataset using Google Earth Engine. Photosynthetically active
+radiation (PAR)---a key driver of daytime primary production---was modeled
+using the `suncalc` package in R, based on solar elevation angles at the lake's
+coordinates. Together, these datasets allow for a complete input matrix to
+estimate GPP, ER, and NEP using the `LakeMetabolizer` package in R,
+specifically applying the ordinary least squares (OLS) method for modeling
+metabolism at an hourly resolution.
 
-Through this project, I aim to quantify diel and seasonal metabolism dynamics and better understand carbon cycling in a temperate lake ecosystem. This research also provides a foundation for future seasonal comparisons and helps demonstrate how open-source tools in R can be used to analyze and visualize high-frequency ecosystem processes.
+Through this project, I aim to quantify diel and seasonal metabolism dynamics
+and better understand carbon cycling in a temperate lake ecosystem. This
+research also provides a foundation for future seasonal comparisons and helps
+demonstrate how open-source tools in R can be used to analyze and visualize
+high-frequency ecosystem processes.
+
+::: {.comment}
+This is a very good introduction. You explain clearly what the system
+you're studying is, what aspects of the system you are investigating,
+and how this connects to the broader scientific area of understanding
+freshwater ecosystems, biogeochemical cycling, and C and O fluxes
+between aquatic systems and the atmosphere.
+
+You clearly state what the research focus of this project will 
+be (quantifying diel metabolism) and how it connects to
+a bigger research project (comparing seasonal dynamics).
+:::
 
 ### Date set
 
+
+::: {.comment}
+Spelling error: "Data set"
+:::
+
+
 The dataset consists of:
 
--   **DO and temperature values** at 0.5 m depth measured every hour from October 18, 2024 at 18:00 to October 20, 2024 at 18:00.
+-   **DO and temperature values** at 0.5 m depth measured every hour from
+    October 18, 2024 at 18:00 to October 20, 2024 at 18:00.
 
--   **Wind speed data** retrieved hourly from ERA5-Land using Google Earth Engine.
+-   **Wind speed data** retrieved hourly from ERA5-Land using Google Earth
+    Engine.
 
--   **PAR (Photosynthetically Active Radiation)** values calculated using the `suncalc` package in R based on solar elevation angle.
+-   **PAR (Photosynthetically Active Radiation)** values calculated using the
+    `suncalc` package in R based on solar elevation angle.
 
--   All data were compiled and merged into a single `.xlsx` file for use with the `LakeMetabolizer` package.
+-   All data were compiled and merged into a single `.xlsx` file for use with
+    the `LakeMetabolizer` package.
 
 ```{r}
 ts.data <- read_excel("ERA5_StephensLake_Weather_Oct2024_WithUnits.xlsx")
 ```
 
+::: {.comment}
+Good description your data: what variables are included in the 
+observations, where the measurements came from, and what the observations
+represent (hourly observations in a specific time window)
+:::
+
+
 ## Descriptive Statistics
 
-To better understand the distribution and variability of environmental drivers that influence lake metabolism, we conducted descriptive statistical analysis on the main input variables: dissolved oxygen (DO), water temperature, wind speed, and modeled photosynthetically active radiation (PAR). Summary statistics such as mean, standard deviation, and range were calculated. Additionally, histograms and kernel density plots were used to visualize the distribution of these variables.
+To better understand the distribution and variability of environmental drivers
+that influence lake metabolism, we conducted descriptive statistical analysis
+on the main input variables: dissolved oxygen (DO), water temperature, wind
+speed, and modeled photosynthetically active radiation (PAR). Summary
+statistics such as mean, standard deviation, and range were calculated.
+Additionally, histograms and kernel density plots were used to visualize the
+distribution of these variables.
 
-We assessed whether each variable follows a normal distribution using Q–Q plots. Since our dataset spans 48 hours at hourly resolution, the diel patterns introduce variability that might cause deviations from normality—especially for variables like PAR, which are naturally zero at night. Finally, we generated a pairs plot to explore correlations among variables, particularly between PAR, DO, and GPP-driving metrics.
+We assessed whether each variable follows a normal distribution using Q-Q
+plots. Since our dataset spans 48 hours at hourly resolution, the diel patterns
+introduce variability that might cause deviations from normality---especially
+for variables like PAR, which are naturally zero at night. Finally, we
+generated a pairs plot to explore correlations among variables, particularly
+between PAR, DO, and GPP-driving metrics.
 
-```{r}
+```{r old-load-data, eval=FALSE}
 # Load necessary libraries
 library(tidyverse)
 library(readxl)
@@ -70,7 +144,36 @@ library(GGally)
 # Load the Excel file
 data_path <- "/Users/mahirtajwar/Desktop/EES-5891/semester-project-mahirtajwar15/ERA5_StephensLake_Weather_Oct2024_WithUnits.xlsx"
 df <- read_excel(data_path)
+```
 
+::: {.comment .problem}
+Hard-coding paths is bad practice, because it breaks your code if you
+move to a different computer. It's better to use portable methods.
+
+The `rprojroot` package is useful because it helps you generate paths
+to files in your RStudio project
+
+```{r new-load-data}
+#| class.source:  "grade-src"
+#| class.output:  "grade-out"
+#| class.message: "grade-msg"
+#| class.warning: "grade-warn"
+#| class.error:   "grade-err"
+library(rprojroot)
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(GGally)
+
+# Load the Excel file
+data_path <- find_rstudio_root_file(
+  "ERA5_StephensLake_Weather_Oct2024_WithUnits.xlsx")
+df <- read_excel(data_path)
+```
+
+:::
+
+```{r wrangle-data}
 # View column names and basic summary
 glimpse(df)
 summary(df)
@@ -83,7 +186,7 @@ vars <- df %>%
 colnames(vars) <- c("Temperature", "DO", "WindSpeed", "PAR")
 ```
 
-```{r}
+```{r histograms}
 # Plot histograms with density curves
 vars %>%
   pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
@@ -96,9 +199,21 @@ vars %>%
        x = "Value", y = "Density")
 ```
 
-The distribution plots (histograms with kernel density curves) provide a snapshot of the variability and skewness present in the key environmental parameters used in this lake metabolism study. Dissolved oxygen (DO) shows a slightly left-skewed distribution, centered around 8.3–8.5 mg/L, indicating relatively stable oxygen conditions with a few lower values likely corresponding to nighttime respiration. Photosynthetically active radiation (PAR) exhibits strong positive skewness, with most values concentrated around zero, reflecting the expected diel cycle of low irradiance during night and sharp peaks during midday hours. Temperature data are moderately spread between 6–22°C, showing no extreme outliers and following a more uniform pattern, possibly due to a consistent weather trend over the 48-hour sampling period. Wind speed shows mild right-skewness, indicating occasional gusty conditions but with most wind speeds clustering around 1–1.5 m/s.
+The distribution plots (histograms with kernel density curves) provide a
+snapshot of the variability and skewness present in the key environmental
+parameters used in this lake metabolism study. Dissolved oxygen (DO) shows a
+slightly left-skewed distribution, centered around 8.3--8.5 mg/L, indicating
+relatively stable oxygen conditions with a few lower values likely
+corresponding to nighttime respiration. Photosynthetically active radiation
+(PAR) exhibits strong positive skewness, with most values concentrated around
+zero, reflecting the expected diel cycle of low irradiance during night and
+sharp peaks during midday hours. Temperature data are moderately spread between
+6--22??C, showing no extreme outliers and following a more uniform pattern,
+possibly due to a consistent weather trend over the 48-hour sampling period.
+Wind speed shows mild right-skewness, indicating occasional gusty conditions
+but with most wind speeds clustering around 1--1.5 m/s.
 
-```{r}
+```{r qq-plots}
 # Load library
 library(ggplot2)
 
@@ -119,7 +234,61 @@ qq_plots <- ggplot(vars_long, aes(sample = Value)) +
 print(qq_plots)
 ```
 
-The Q-Q plots further evaluate whether the variables follow a normal distribution. DO and temperature variables largely follow the reference line, suggesting a close-to-normal distribution with minor deviations at the tails. Wind speed shows some deviation from normality at higher values, reflecting its slight skewness. In contrast, PAR deviates considerably from the normal distribution, particularly in the lower and upper quantiles, confirming its strong skewness and non-normality—likely due to its zero values at night and sharp peaks during the day. These visual diagnostics help inform the appropriate statistical methods to be applied later, such as transformations or non-parametric tests where normality assumptions do not hold.
+::: {.comment}
+`ggplot2` and `tidyr` were automatically loaded earlier when you loaded
+`tidyversse`, so you don't need to load them again, but there's no 
+harm in doing so.
+
+Also, it's good practice to put `stat_qq_line` before `stat_qq`,
+because `stat_qq` sets the labels for x- and y-axes correctly.
+
+
+```{r qq-plots-jg}
+#| class.source:  "grade-src"
+#| class.output:  "grade-out"
+#| class.message: "grade-msg"
+#| class.warning: "grade-warn"
+#| class.error:   "grade-err"
+qq_plots <- ggplot(vars_long, aes(sample = Value)) +
+  stat_qq_line(color = "red") +
+  stat_qq() +
+  facet_wrap(~ Variable, scales = "free") +
+  theme_bw() +
+  labs(title = "Q-Q Plots of Key Variables")
+
+print(qq_plots)
+```
+
+:::
+
+The Q-Q plots further evaluate whether the variables follow a normal
+distribution. DO and temperature variables largely follow the reference line,
+suggesting a close-to-normal distribution with minor deviations at the tails.
+Wind speed shows some deviation from normality at higher values, reflecting its
+slight skewness. In contrast, PAR deviates considerably from the normal
+distribution, particularly in the lower and upper quantiles, confirming its
+strong skewness and non-normality---likely due to its zero values at night and
+sharp peaks during the day. These visual diagnostics help inform the
+appropriate statistical methods to be applied later, such as transformations or
+non-parametric tests where normality assumptions do not hold.
+
+::: {.comment .problem}
+It's very clear from the histograms that all of the data are extremely
+non-normal. You write here that the DO temperature mostly follow normal
+distributions, but your histograms and kernel-density plotss 
+show that D0 is extremely skewed and that temperature is bimodal,
+which is absolutely incompatible with being normal.
+
+When you look at Q-Q plots, you should always contextualize them by 
+also referring to histograms and/or kernel-density plots.
+
+Further, you know from your scientific knowledge that temperature 
+is unlikely to be normally distributed since it shows a strong
+diel cycle, warming during daylight hours and cooling at night.
+
+Similarly, you can see that wind-speed also shows a clear diel 
+pattern, which implies that it's definitely not normal.
+:::
 
 ## Research Questions
 
@@ -127,33 +296,56 @@ The Q-Q plots further evaluate whether the variables follow a normal distributio
 
 2.  What is the relationship between PAR and GPP across diel cycles?
 
-3.  Are nighttime NEP values consistently negative, indicating dominant respiration?
+3.  Are nighttime NEP values consistently negative, indicating dominant
+    respiration?
 
-4.  How does GPP compare to ER across the two days, and what does that imply about autotrophic vs. heterotrophic status?
+4.  How does GPP compare to ER across the two days, and what does that imply
+    about autotrophic vs. heterotrophic status?
 
 ## Hypotheses and Tests
 
 ### Hypotheses
 
--   **H1**: **Gross Primary Production (GPP) will exhibit strong diurnal patterns, peaking during daylight hours and dropping to near zero at night.**\
+-   **H1**: **Gross Primary Production (GPP) will exhibit strong diurnal
+    patterns, peaking during daylight hours and dropping to near zero at
+    night.**\
 
-    This hypothesis is based on the fundamental understanding that GPP is driven by photosynthesis, which depends on sunlight. During daylight hours, the availability of photosynthetically active radiation (PAR) enables autotrophic organisms (such as phytoplankton and aquatic plants) to convert light energy into organic carbon. At night, the absence of sunlight halts photosynthesis, and GPP is expected to approach zero.
+    This hypothesis is based on the fundamental understanding that GPP is
+    driven by photosynthesis, which depends on sunlight. During daylight hours,
+    the availability of photosynthetically active radiation (PAR) enables
+    autotrophic organisms (such as phytoplankton and aquatic plants) to convert
+    light energy into organic carbon. At night, the absence of sunlight halts
+    photosynthesis, and GPP is expected to approach zero.
 
--   **H2**: **Ecosystem Respiration (ER) will remain relatively stable throughout the diel cycle, with potential increases during nighttime.**\
+-   **H2**: **Ecosystem Respiration (ER) will remain relatively stable
+    throughout the diel cycle, with potential increases during nighttime.**\
 
-    Respiration in aquatic systems occurs continuously as organisms break down organic matter to produce energy. While ER is generally less variable than GPP, it may show slight increases at night due to greater oxygen availability from mixing, or due to continued microbial and heterotrophic activity in the absence of photosynthesis.
+    Respiration in aquatic systems occurs continuously as organisms break down
+    organic matter to produce energy. While ER is generally less variable than
+    GPP, it may show slight increases at night due to greater oxygen
+    availability from mixing, or due to continued microbial and heterotrophic
+    activity in the absence of photosynthesis.
 
--   **H3**: **Net Ecosystem Productivity (NEP) will be positive during the day and negative at night, indicating a shift from photosynthetic dominance to respiratory dominance.**\
+-   **H3**: **Net Ecosystem Productivity (NEP) will be positive during the day
+    and negative at night, indicating a shift from photosynthetic dominance to
+    respiratory dominance.**\
 
-    NEP represents the balance between GPP and ER. During the day, GPP is expected to exceed ER, resulting in positive NEP values (net oxygen gain). At night, with GPP falling to zero and ER continuing, NEP is expected to become negative (net oxygen loss). This diel shift in NEP highlights the natural metabolic rhythm of the lake ecosystem.
+    NEP represents the balance between GPP and ER. During the day, GPP is
+    expected to exceed ER, resulting in positive NEP values (net oxygen gain).
+    At night, with GPP falling to zero and ER continuing, NEP is expected to
+    become negative (net oxygen loss). This diel shift in NEP highlights the
+    natural metabolic rhythm of the lake ecosystem.
 
 ### Methods
 
-We used the `OLS_inst` function from the LakeMetabolizer package to estimate hourly GPP, ER, and NEP values using the classic OLS (Ordinary Least Squares) approach. PAR was calculated using the solar elevation angle, and wind speed was used to compute gas exchange rates (k600) and k.gas.
+We used the `OLS_inst` function from the LakeMetabolizer package to estimate
+hourly GPP, ER, and NEP values using the classic OLS (Ordinary Least Squares)
+approach. PAR was calculated using the solar elevation angle, and wind speed
+was used to compute gas exchange rates (k600) and k.gas.
 
 Code block showing calculation of PAR values using Suncalc
 
-```{r}
+```{r calc-PAR}
 # Load libraries
 library(suncalc)
 library(dplyr)
@@ -189,7 +381,7 @@ sol_data_fall <- sol_data_fall %>%
     irradiance = ifelse(elevation > -6,
                         pmax(50, 1367 * sin(elevation * pi / 180)),
                         0),  # allow minimum irradiance at twilight
-    PAR = irradiance * 2.3  # µmol/m²/s
+    PAR = irradiance * 2.3  # B5mol/mB2/s
   )
 
 # Export to CSV
@@ -200,13 +392,49 @@ write.csv(sol_data_fall[, c("datetime_local", "PAR")],
 
 Code block showing LakeMetabolizer OLS modeling for GPP, ER, NEP
 
-```{r}
+```{r read-data-2, eval=FALSE}
 library(LakeMetabolizer)
 library(readxl)
 
 data.path = system.file('extdata/', package="LakeMetabolizer")
 ts.data = read_excel ('/Users/mahirtajwar/Desktop/EES-5891/semester-project-mahirtajwar15/ERA5_StephensLake_Weather_Oct2024_WithUnits.xlsx')
+```
 
+::: {.comment .problem}
+Again, don't hard-code file paths.
+
+```{r alt-read-data-2-jg}
+#| class.source:  "grade-src"
+#| class.output:  "grade-out"
+#| class.message: "grade-msg"
+#| class.warning: "grade-warn"
+#| class.error:   "grade-err"
+library(LakeMetabolizer)
+library(readxl)
+
+data.path = system.file('extdata/', package="LakeMetabolizer")
+ts.data = read_excel ( find_rstudio_root_file(
+  'ERA5_StephensLake_Weather_Oct2024_WithUnits.xlsx'
+  ))
+```
+
+Also, youo already read the data in as `df`, so you don't need to read
+it in again. You can just use `df`, and you never use the variable
+`data.path`, so you could just omit that.
+
+```{r assign-ts.data-jg, eval=FALSE}
+#| class.source:  "grade-src"
+#| class.output:  "grade-out"
+#| class.message: "grade-msg"
+#| class.warning: "grade-warn"
+#| class.error:   "grade-err"
+library(LakeMetabolizer)
+
+ts.data = df
+```
+:::
+
+```{r model-GPP-ER-NEP}
 #calculate U10 and add it back onto the original
 u10 = wind.scale(ts.data)
 ts.data = rmv.vars(ts.data, 'wnd', ignore.offset=TRUE) #drop old wind speed column
@@ -232,7 +460,7 @@ z.mix[z.mix$z.mix <= 0 | is.na(z.mix$z.mix), 'z.mix'] <- 1.6  # replace with act
 ts.data = merge(ts.data, z.mix[,c('datetime','z.mix')])
 ```
 
-```{r}
+```{r def-OLS_inst}
 calc.freq <- function(datetime) {
   freq <- round(Mode(1/diff(date2doy(datetime))))
 }
@@ -276,7 +504,16 @@ OLS_inst <- function(datetime, do.obs, do.sat, k.gas, z.mix, irr, wtr, ...) {
 }
 ```
 
-```{r}
+
+::: {.comment}
+For manipulating dates and times, you may want to look at the 
+`lubridate` package, which is part of the `tidyverse`. It offers
+powerful functions for manipulating date and date-time data, including
+parsing `POSIXt`, `POSIXlt`, and `POSIXct` strings and objects.
+:::
+
+
+```{r OLS-metabolism}
 # Run OLS metabolism model
 ols.inst.res <- OLS_inst(
   datetime = ts.data$datetime,
@@ -292,7 +529,7 @@ ols.inst.res <- OLS_inst(
 ols.inst.res.df <- data.frame(ols.inst.res$metab)
 ```
 
-```{r}
+```{r def-OLS_inst-2}
 calc.freq <- function (datetime) 
 {
   freq <- round(Mode(1/diff(date2doy(datetime))))
@@ -362,7 +599,7 @@ OLS_inst <- function (datetime, do.obs, do.sat, k.gas, z.mix, irr, wtr, ...)
 
 ### Hypothesis Tests
 
-```{r}
+```{r test-GPP-hypothesses}
 # Filter daytime data where PAR > 0 (indicative of sunlight hours)
 daytime_data <- ts.data[ts.data$par > 0, ]
 
@@ -370,9 +607,19 @@ daytime_data <- ts.data[ts.data$par > 0, ]
 cor.test(daytime_data$par, ols.inst.res.df$GPP[ts.data$par > 0], method = "pearson")
 ```
 
-To examine the relationship between light availability and ecosystem productivity, a Pearson correlation test was conducted between PAR (photosynthetically active radiation) and GPP (gross primary production) during the daytime period (when PAR \> 0). The results showed an **extremely strong positive correlation** between PAR and GPP, with a correlation coefficient of **r = 1** and a **p-value \< 2.2e-16**, indicating that the relationship is statistically significant. This confirms that GPP increases with light intensity and is tightly coupled with solar radiation availability, as expected in photosynthetically driven aquatic systems. The strength of this correlation validates the role of PAR as a key environmental driver of primary productivity in Stephens Lake during the fall sampling period.
+To examine the relationship between light availability and ecosystem
+productivity, a Pearson correlation test was conducted between PAR
+(photosynthetically active radiation) and GPP (gross primary production) during
+the daytime period (when PAR \> 0). The results showed an **extremely strong
+positive correlation** between PAR and GPP, with a correlation coefficient of
+**r = 1** and a **p-value \< 2.2e-16**, indicating that the relationship is
+statistically significant. This confirms that GPP increases with light
+intensity and is tightly coupled with solar radiation availability, as expected
+in photosynthetically driven aquatic systems. The strength of this correlation
+validates the role of PAR as a key environmental driver of primary productivity
+in Stephens Lake during the fall sampling period.
 
-```{r}
+```{r test-NEP-hypotheses}
 # Define day and night based on PAR threshold
 ols.inst.res.df$light_period <- ifelse(ts.data$par[-1] > 0, "Day", "Night")
 
@@ -381,19 +628,71 @@ t.test(NEP ~ light_period, data = ols.inst.res.df)
 
 ```
 
-To evaluate differences in Net Ecosystem Productivity (NEP) between day and night, a Welch Two Sample t-test was conducted. The results show a **statistically significant difference** in NEP between these two light periods (**t = 9.37**, **df = 24.28**, **p \< 0.000000002**). The 95% confidence interval for the difference in means ranges from **4.20 to 6.57**, suggesting that this difference is not due to random variation.
+To evaluate differences in Net Ecosystem Productivity (NEP) between day and
+night, a Welch Two Sample t-test was conducted. The results show a
+**statistically significant difference** in NEP between these two light periods
+(**t = 9.37**, **df = 24.28**, **p \< 0.000000002**). The 95% confidence
+interval for the difference in means ranges from **4.20 to 6.57**, suggesting
+that this difference is not due to random variation.
 
-Specifically, the mean NEP during the **day** was **+0.13 mg O₂/L/hr**, indicating slight net oxygen production, while the mean NEP at **night** was **−5.25 mg O₂/L/hr**, signifying dominant ecosystem respiration. These results provide strong support for **Hypothesis 3 (H3)** — that NEP is positive during sunlight hours and negative during the night, reflecting typical diel metabolic behavior in oligotrophic lakes.
+Specifically, the mean NEP during the **day** was **+0.13 mg O_2\_/L/hr**,
+indicating slight net oxygen production, while the mean NEP at **night** was
+**-5.25 mg O_2\_/L/hr**, signifying dominant ecosystem respiration. These
+results provide strong support for **Hypothesis 3 (H3)**---that NEP is positive
+during sunlight hours and negative during the night, reflecting typical diel
+metabolic behavior in oligotrophic lakes.
+
+
+::: {.comment}
+Good use of hypothesis tests to test your hypotheses about relationships
+between sunlight and both photosynthesis activity and gross primary
+production.
+
+For NEP, in addition to $t$-test, which compares mean NEP between
+day and night, it could also be useful to do an ANOVA test, which 
+would measure how much of the total variance in the NEP data can be
+explained by day vs. night. The bimodal distribution of variables
+like temperature and wind-speed, and the metabolic data plot that you
+show below suggest that you would probably find 
+useful results from ANOVA.
+
+
+```{r NEP-ANOVA}
+#| class.source:  "grade-src"
+#| class.output:  "grade-out"
+#| class.message: "grade-msg"
+#| class.warning: "grade-warn"
+#| class.error:   "grade-err"
+anova(lm(NEP ~ light_period, data = ols.inst.res.df))
+```
+:::
+
 
 ### Results and Discussion
 
-Before modeling lake metabolism, I conducted basic exploratory data analysis on the key variables: dissolved oxygen (DO), water temperature, wind speed, and photosynthetically active radiation (PAR). The dataset consists of 48 hourly observations over two full days (October 18–20, 2024), capturing the diel variability in environmental conditions.
+Before modeling lake metabolism, I conducted basic exploratory data analysis on
+the key variables: dissolved oxygen (DO), water temperature, wind speed, and
+photosynthetically active radiation (PAR). The dataset consists of 48 hourly
+observations over two full days (October 18--20, 2024), capturing the diel
+variability in environmental conditions.
 
-DO concentrations at 0.5 meters depth ranged from approximately **8.2 to 10.5 mg/L**, with higher values observed during midday hours, consistent with photosynthetic oxygen production. Water temperature varied modestly across the diel cycle, ranging between **17.8°C and 19.2°C**, reflecting the thermal inertia typical of shallow lakes in fall. Wind speed, extracted from the ERA5-Land dataset and converted to standard 10-meter height (U10), ranged from **0.1 to 3.8 m/s**, influencing surface gas exchange. PAR values modeled using the `suncalc` package ranged from **0 to \~1700 μmol/m²/s**, with clear peaks during mid-day and zero values at night, validating expected sunlight-driven patterns.
+DO concentrations at 0.5 meters depth ranged from approximately **8.2 to 10.5
+mg/L**, with higher values observed during midday hours, consistent with
+photosynthetic oxygen production. Water temperature varied modestly across the
+diel cycle, ranging between **17.8??C and 19.2??C**, reflecting the thermal
+inertia typical of shallow lakes in fall. Wind speed, extracted from the
+ERA5-Land dataset and converted to standard 10-meter height (U10), ranged from
+**0.1 to 3.8 m/s**, influencing surface gas exchange. PAR values modeled using
+the `suncalc` package ranged from **0 to**
+$\sim 1700 \mu \mathrm{mol}/\mathrm{m}^2/\mathrm{s}$, with clear peaks during
+mid-day and zero values at night, validating expected sunlight-driven patterns.
 
-The dataset captures sufficient diel variation to support metabolism modeling, especially the contrasting light and dark conditions necessary to distinguish GPP, ER, and NEP dynamics. Below is the final GPP-ER-NEP plot with nighttime shaded and custom x-axis labeling.
+The dataset captures sufficient diel variation to support metabolism modeling,
+especially the contrasting light and dark conditions necessary to distinguish
+GPP, ER, and NEP dynamics. Below is the final GPP-ER-NEP plot with nighttime
+shaded and custom x-axis labeling.
 
-```{r}
+```{r plot-diel-data}
 ols.inst.res = OLS_inst(datetime = ts.data$datetime, 
                         do.obs = ts.data$doobs_0.5, do.sat = ts.data$do.sat,
                         k.gas = ts.data$k.gas, z.mix = ts.data$z.mix,
@@ -432,14 +731,63 @@ legend("topright",
 
 ### Key observations:
 
-The ecosystem metabolism results revealed strong diel trends consistent with theoretical expectations for oligotrophic headwater lakes. **Gross Primary Production (GPP)** exhibited a pronounced mid-day peak between **11:00 and 15:00** on both sampling days, reaching values of approximately **9.5–10.0 mg O₂/L/hr**. This timing aligned closely with the daily maxima in modeled **Photosynthetically Active Radiation (PAR)**, confirming the dependency of GPP on light availability. The GPP curve showed a steep rise shortly after sunrise and a rapid decline toward evening, with near-zero values during the nighttime hours.
+The ecosystem metabolism results revealed strong diel trends consistent with
+theoretical expectations for oligotrophic headwater lakes. **Gross Primary
+Production (GPP)** exhibited a pronounced mid-day peak between **11:00 and
+15:00** on both sampling days, reaching values of approximately **9.5--10.0 mg
+O_2\_/L/hr**. This timing aligned closely with the daily maxima in modeled
+**Photosynthetically Active Radiation (PAR)**, confirming the dependency of GPP
+on light availability. The GPP curve showed a steep rise shortly after sunrise
+and a rapid decline toward evening, with near-zero values during the nighttime
+hours.
 
-**Ecosystem Respiration (ER)** remained relatively stable throughout the diel cycle, ranging between **-4.5 and -5.0 mg O₂/L/hr**. While slight increases were observed during nighttime hours—likely reflecting microbial and planktonic respiration—the variation in ER was modest compared to the dynamic behavior of GPP.
+**Ecosystem Respiration (ER)** remained relatively stable throughout the diel
+cycle, ranging between **-4.5 and -5.0 mg O_2\_/L/hr**. While slight increases
+were observed during nighttime hours---likely reflecting microbial and
+planktonic respiration---the variation in ER was modest compared to the dynamic
+behavior of GPP.
 
-**Net Ecosystem Production (NEP)** clearly captured the transition between photosynthetic and respiratory dominance. NEP was consistently **positive during daylight hours**, indicating a net autotrophic state (GPP \> ER), and **negative at night**, reflecting a shift to net heterotrophy as GPP dropped to zero and ER continued. The sharp inflection points around dawn and dusk highlight the effectiveness of high-frequency sampling in resolving transient metabolic processes.
+**Net Ecosystem Production (NEP)** clearly captured the transition between
+photosynthetic and respiratory dominance. NEP was consistently **positive
+during daylight hours**, indicating a net autotrophic state (GPP \> ER), and
+**negative at night**, reflecting a shift to net heterotrophy as GPP dropped to
+zero and ER continued. The sharp inflection points around dawn and dusk
+highlight the effectiveness of high-frequency sampling in resolving transient
+metabolic processes.
 
-These trends affirm that the system is primarily light-driven, and that diel patterns of metabolism in Stephens Lake are strongly regulated by solar radiation and its effect on photosynthesis.
+These trends affirm that the system is primarily light-driven, and that diel
+patterns of metabolism in Stephens Lake are strongly regulated by solar
+radiation and its effect on photosynthesis.
 
 ### Conclusion
 
-This study successfully applied the LakeMetabolizer package in R to model diel changes in aquatic metabolism over a 48-hour fall period in Stephens Lake, Franklin, Tennessee. The combination of in situ dissolved oxygen and temperature measurements, modeled wind speed from ERA5-Land, and solar irradiance from the `suncalc` package enabled robust estimation of GPP, ER, and NEP. GPP showed strong diel peaks aligned with sunlight availability. ER remained relatively constant, indicating stable respiratory processes. NEP shifted between positive and negative values, clearly tracking daily light cycles. These results reinforce the central role of light in controlling primary production and carbon cycling in small headwater lakes. The use of open-access data (ERA5 for wind and modeled PAR) and open-source tools makes this workflow replicable and scalable for other aquatic ecosystems.
+This study successfully applied the LakeMetabolizer package in R to model diel
+changes in aquatic metabolism over a 48-hour fall period in Stephens Lake,
+Franklin, Tennessee. The combination of in situ dissolved oxygen and
+temperature measurements, modeled wind speed from ERA5-Land, and solar
+irradiance from the `suncalc` package enabled robust estimation of GPP, ER, and
+NEP. GPP showed strong diel peaks aligned with sunlight availability. ER
+remained relatively constant, indicating stable respiratory processes. NEP
+shifted between positive and negative values, clearly tracking daily light
+cycles. These results reinforce the central role of light in controlling
+primary production and carbon cycling in small headwater lakes. The use of
+open-access data (ERA5 for wind and modeled PAR) and open-source tools makes
+this workflow replicable and scalable for other aquatic ecosystems.
+
+
+::: {.comment}
+This is a good analysis of your data. You present the primary research
+interests and the data very well and explain the context and the connections
+to bigger research quesstions.
+
+You do a good job using statistical tools to analyze the data, but you
+could have been more thoughtful about making connections, such as 
+interpreting the Q-Q plots in the context of the histograms and 
+kernel-density plots, and you might have thought about using ANOVA 
+to compare variances as well as using $t$-tests that compare means.
+
+All in all, this is a nice analysis and I hope that it will be useful
+as you continue to analyze the data you collected from Stephens Lake.
+
+**Grade:** $A-$
+:::
